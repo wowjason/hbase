@@ -1131,6 +1131,11 @@ public class MasterRpcServices extends RSRpcServices
     try {
       master.checkServiceStarted();
       TableName tableName = ProtobufUtil.toTableName(request.getTableName());
+      if (LOG.isTraceEnabled()) {
+        User caller = RpcServer.getRequestUser().orElse(null);
+        String client = RpcServer.getRemoteAddress().map(InetAddress::toString).orElse("");
+        LOG.trace("Get Table State {}, {}, {}", tableName.getNameAsString(), caller, client);
+      }
       TableState ts = master.getTableStateManager().getTableState(tableName);
       GetTableStateResponse.Builder builder = GetTableStateResponse.newBuilder();
       builder.setTableState(ts.convert());
